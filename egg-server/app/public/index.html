@@ -1,0 +1,152 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" />
+    <script src="https://cdn.bootcss.com/qs/6.6.0/qs.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" />
+    <style>
+        .cube-btn {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div>
+          <el-input
+            placeholder="请输入电话"
+            prefix-icon="el-icon-phone"
+            v-model="userForm.mobile">
+        </el-input>
+          <el-input
+            placeholder="请输入密码"
+            prefix-icon="el-icon-lock"
+            v-model="userForm.password"
+            show-password>
+        </el-input>
+          <el-input
+            placeholder="请输入姓名"
+            prefix-icon="el-icon-user-solid"
+            v-model="userForm.realName">
+        </el-input>
+            <el-button @click="create">注册用户</el-button>
+        </div>
+        <div>
+          <el-input
+            placeholder="请输入电话"
+            prefix-icon="el-icon-phone"
+            v-model="loginForm.mobile">
+        </el-input>
+          <el-input
+            placeholder="请输入密码"
+            prefix-icon="el-icon-lock"
+            v-model="loginForm.password"
+            show-password>
+        </el-input>
+            <el-button @click="login">登入</el-button>
+        </div>
+        <div>
+          <el-input
+            placeholder="请输入平民词"
+            prefix-icon="el-icon-phone"
+            v-model="wordForm.common">
+        </el-input>
+          <el-input
+            placeholder="请输入卧底词"
+            prefix-icon="el-icon-phone"
+            v-model="wordForm.special">
+        </el-input>
+            <el-button @click="addWord">添加谁是卧底词汇</el-button>
+        </div>
+        <div>
+            <el-button @click="getWord">获取词汇列表</el-button>
+            <el-button @click="del">删除用户</el-button>
+            <el-button @click="logout">退出登录</el-button>
+            <el-button @click="list">用户列表</el-button>
+            </div>
+        <div>
+            <el-button onclick="document.getElementById('log').innerHTML = ''">Clear Log</el-button>
+        </div>
+        <h6 id="log"></h6>
+    </div>
+    <script>
+        // axios.defaults.baseURL = 'http://localhost:3000'
+        axios.defaults.withCredentials = true
+        axios.interceptors.request.use(
+            config => {
+                const token = window.localStorage.getItem("token");
+                if (token) {
+                    // 判断是否存在token，如果存在的话，则每个http header都加上token
+                    // Bearer是JWT的认证头部信息
+                    config.headers.common["Authorization"] = "Bearer " + token;
+                }
+                return config;
+            },
+            err => {
+                return Promise.reject(err);
+            }
+        )
+        axios.interceptors.response.use(
+            response => {
+                document.getElementById('log').append(JSON.stringify(response.data))
+                return response;
+            }
+        );
+        var app = new Vue({
+            el: '#app',
+            data: {
+                name:'',
+                value: 'input',
+                token: {},
+                userForm:{},
+                loginForm:{},
+                wordForm:{},
+            },
+            methods: {
+                async create() {
+                    await axios.post('/create', this.userForm)
+                },
+                async addWord() {
+                    console.log(this.wordForm);
+                    await axios.post('/api/addWord', this.wordForm)
+                },
+                async list() {
+                    const res = await axios.get('/api/user')
+                    this.list = res.data.data.list
+                },
+                async del() {
+                    console.log('list', this.list)
+                    this.list.map(v => {
+                        axios.delete(`/api/user/${v._id}`)
+                    })
+                },
+                async login() {
+                    const res = await axios.post('/auth/jwt/login', this.loginForm)
+                    localStorage.setItem("token", res.data.data.token);
+                    this.getUserInfo();
+                },
+                async logout() {
+                    const res = await axios.post('/auth/jwt/logout')
+                    localStorage.removeItem("token");
+                },
+                async getUserInfo() {
+                    const res = await axios.get('/api/userInfo/'+ this.loginForm.mobile)
+                    this.name = res.data.realName;
+                    this.wordForm.author = res.data.data.realName;
+                },
+                async getWord(){
+                    const res = await axios.get('/api/getWord')
+                }
+            },
+            mounted: function () {},
+        });
+    </script>
+</body>
+
+</html>
