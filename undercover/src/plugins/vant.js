@@ -52,3 +52,7 @@ import { Swipe, SwipeItem } from 'vant';
 
 Vue.use(Swipe);
 Vue.use(SwipeItem);
+
+import { Form } from 'vant';
+
+Vue.use(Form);
