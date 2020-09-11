@@ -23,7 +23,7 @@
 
 作者 **[小柚子](https://github.com/Youbaofeng)**
 
-**项目线上浏览地址点击访问(http://47.107.126.241:8080/#/login),欢迎大家登陆加词和试玩游戏哦**
+**[项目线上浏览地址点击访问](http://47.107.126.241:8080/#/login)**,欢迎大家登陆加词和试玩游戏哦
 
 ### 游戏交流
 **微信群:扫码回复 加群 一起进行游戏交流 提出宝贵修改意见**
@@ -46,7 +46,7 @@
 </div>
 
 ## 如何运行
-#(在安装前请先确定本地已经安装了node8.9+和mongo)
+### (在安装前请先确定本地已经安装了node8.9+和mongo)
 ```bash
 # 克隆项目到本地
 git clone https://github.com/Youbaofeng/game-whoIsUndercover.git
