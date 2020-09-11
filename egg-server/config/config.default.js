@@ -31,8 +31,8 @@ module.exports = appInfo => {
   config.swaggerdoc = {
     dirScanner: './app/controller',
     apiInfo: {
-      title: '开课吧接口',
-      description: '开课吧接口 swagger-ui for egg',
+      title: '谁是卧底接口',
+      description: '谁是卧底接口 swagger-ui for egg',
       version: '1.0.0',
     },
     schemes: ['http', 'https'],

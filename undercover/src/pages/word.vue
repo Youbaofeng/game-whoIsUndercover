@@ -6,7 +6,7 @@
     <van-button round type="info" @click="showGoodRanking" class="wordButton">智慧大师排行榜</van-button>
     <img src="@/image/sgg.jpg" />
     <van-button round type="info" @click="showNumberRanking" class="wordButton">创造大师排行榜</van-button>
-    <van-popup v-model="addPopup" closeable position="bottom" :style="{ height: '30%' }">
+    <van-popup v-model="addPopup" closeable position="bottom" :style="{ height: '35%' }">
       <p class="ps">请输入两个词语作为“谁是卧底”游戏词汇</p>
       <p class="tip">(实际游戏中平民词和卧底词可能互换)</p>
       <van-cell-group>
