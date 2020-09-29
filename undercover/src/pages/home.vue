@@ -21,6 +21,14 @@
         </template>
       </van-field>
       <van-field v-model="all" readonly label="总游戏人数" />
+      <van-field label="自创词汇">
+        <template #extra>
+          <p class="tll">(另选一人当法官)</p>
+          <van-switch v-model="createGame" size="24" />
+        </template>
+      </van-field>
+        <van-field v-model.trim="wordForm.common" v-show="createGame" label="平民词" placeholder="平民" />
+        <van-field v-model.trim="wordForm.special" v-show="createGame" label="卧底词" placeholder="卧底" />
       <van-button type="primary" size="normal" @click="start" class="startButtom">开始游戏</van-button>
     </van-cell-group>
 
@@ -82,8 +90,9 @@
 
 <script>
 import BottomGuid from "@/components/BottomGuid";
-import { getWord,updateGood,updateBad } from "@/api/index";
+import { getWord,addWord,updateGood,updateBad } from "@/api/index";
 import { Toast, Dialog } from "vant";
+import { mapState } from "vuex";
 export default {
   data() {
     return {
@@ -91,9 +100,11 @@ export default {
       common: 3,
       special: 1,
       white: true,
+      createGame: false,
       all: 5,
       commonMessage: "",
       specialMessage: "",
+      wordForm: {},
       wordList: {},
       nowWord: {},
       nowList: [],
@@ -114,8 +125,8 @@ export default {
   components: {
     BottomGuid,
   },
-  created() {
-    this.initData();
+  computed: {
+    ...mapState(["name", "mobile"]),
   },
   methods: {
     async initData() {
@@ -124,9 +135,14 @@ export default {
         this.wordList = res.data;
       }
     },
-    start() {
-      this.restGame();
-      this.pickWord();
+    async start() {
+      this.restGame();  //初始化常数
+      if(this.createGame){
+        await this.createWord(); //添加词汇
+      }else {
+        await this.initData();  //获取词语列表
+        this.pickWord();  //选择词汇
+      }
     },
     restGame() {
       this.gamePerson = {
@@ -168,11 +184,30 @@ export default {
       } else {
         this.passId.push(this.wordList[random]._id);
         this.nowWord = this.wordList[random];
-        console.log(this.nowWord);
-        this.makeList();
+        this.makeList();  //制作卡牌
+      }
+    },
+    async createWord() {
+      if(this.wordForm.common == '' || this.wordForm.common == null || this.wordForm.common == undefined || this.wordForm.special == '' || this.wordForm.special == null || this.wordForm.special == undefined){
+        Toast("词语为空或错误，请重新输入");
+        return false;
+      }
+      this.wordForm.author = this.name;
+      this.wordForm.mobile = this.mobile;
+      const res = await addWord(this.wordForm);
+      if (res.code == 20000) {
+        Toast("添加成功，游戏开始");
+        this.wordForm = {};
+        this.createGame = false;
+        this.nowWord = res.data
+        this.makeList();  //制作卡牌
+      }else {
+        Toast("添加错误，重新添加");
+        return false;
       }
     },
     makeList() {
+      console.log(this.nowWord);
       this.nowList = [];
       for (let i = 0; i < this.common; i++) {
         this.nowList.push({
@@ -213,6 +248,7 @@ export default {
         if (item.name == "white") {
           this.gamePerson.white = 0;
           this.whiteBox = true; //展示爆词组件
+          this.$refs.countDown.reset();
           this.$set(this.showCard, index, false);
         } else if (item.name == "common") {
           this.gamePerson.common = this.gamePerson.common - 1;
@@ -411,5 +447,8 @@ p {
   margin: 20px auto;
   justify-content: space-around;
 }
-
+.tll {
+    position: absolute;
+    left: 7rem;
+}
 </style>
