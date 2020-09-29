@@ -136,12 +136,17 @@ export default {
       }
     },
     async start() {
-      this.restGame();  //初始化常数
       if(this.createGame){
-        await this.createWord(); //添加词汇
+        let flag = await this.createWord(); //添加词汇
+        if(flag){
+            this.restGame();  //初始化常数
+        }
       }else {
         await this.initData();  //获取词语列表
-        this.pickWord();  //选择词汇
+        let flag = this.pickWord();  //选择词汇
+        if(flag){
+            this.restGame();  //初始化常数
+        }
       }
     },
     restGame() {
@@ -170,7 +175,7 @@ export default {
     pickWord() {
       if (this.wordList.length == this.passId.length) {
         Toast("没有新词汇可以玩了，请添加词汇");
-        return null;
+        return false;
       }
       const random = Math.round(Math.random() * (this.wordList.length - 1));
       const { _id } = this.wordList[random];
@@ -186,6 +191,7 @@ export default {
         this.nowWord = this.wordList[random];
         this.makeList();  //制作卡牌
       }
+        return true;
     },
     async createWord() {
       if(this.wordForm.common == '' || this.wordForm.common == null || this.wordForm.common == undefined || this.wordForm.special == '' || this.wordForm.special == null || this.wordForm.special == undefined){
@@ -205,6 +211,7 @@ export default {
         Toast("添加错误，重新添加");
         return false;
       }
+        return true;
     },
     makeList() {
       console.log(this.nowWord);
