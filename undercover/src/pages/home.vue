@@ -253,10 +253,10 @@ export default {
     turnCard(index, item) {
       if (this.gameStart) {
         if (item.name == "white") {
+          this.$set(this.showCard, index, false);
           this.gamePerson.white = 0;
           this.whiteBox = true; //展示爆词组件
           this.$refs.countDown.reset();
-          this.$set(this.showCard, index, false);
         } else if (item.name == "common") {
           this.gamePerson.common = this.gamePerson.common - 1;
           if (this.gamePerson.special == this.gamePerson.common) {
