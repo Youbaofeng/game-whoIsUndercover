@@ -4,8 +4,8 @@ import axios from 'axios'
 import {Toast} from "vant"
 // create an axios instance
 const service = axios.create({
-//   baseURL: 'http://47.107.126.241:7001/', // url = base url + request url
-  baseURL: 'http://127.0.0.1:7001/', // url = base url + request url
+  baseURL: 'http://47.107.126.241:7001/', // url = base url + request url
+//   baseURL: 'http://127.0.0.1:7001/', // url = base url + request url
   withCredentials: false, // send cookies when cross-domain requests
   timeout: 5000 // request timeout
 })
